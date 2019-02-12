@@ -304,7 +304,7 @@ export default {
       }
 
       // Pause autoplay on mouseover.
-      if (this.conf.pauseOnHover && !hasTouch && this.conf.autoplay) {
+      if (!hasTouch) {
         this.container.addEventListener('mouseover', this.onMouseIn)
         this.container.addEventListener('mouseout', this.onMouseOut)
       }
