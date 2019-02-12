@@ -1,15 +1,22 @@
-<template lang="pug">
-.vueperslide(:class="{ 'vueperslide--active': $parent.slides.activeUid === _uid, 'vueperslide--previous-slide': isPreviousSlide, 'vueperslide--next-slide': isNextSlide, 'vueperslide--visible': isSlideVisible }" :face="slideFace3d" :style="wrapperStyles" :aria-hidden="$parent.slides.activeUid === _uid || isSlideVisible ? 'false' : 'true'")
-  .vueperslide__image(v-if="image && $parent.conf.slideImageInside" :style="imageStyles")
-  .vueperslide__content-wrapper(v-show="!$parent.conf.slideContentOutside && (title || hasTitleSlotData || content || hasContentSlotData)")
-    .vueperslide__title(v-show="title || hasTitleSlotData")
-      div(v-show="!$parent.conf.slideContentOutside && !title")
-        slot(name="slideTitle")
-      div(v-if="title" v-html="title")
-    .vueperslide__content(v-if="content || hasContentSlotData")
-      div(v-show="!$parent.conf.slideContentOutside && !content")
-        slot(name="slideContent")
-      div(v-if="content" v-html="content")
+<template>
+<div class="vueperslide" :class="{ 'vueperslide--active': $parent.slides.activeUid === _uid, 'vueperslide--previous-slide': isPreviousSlide, 'vueperslide--next-slide': isNextSlide, 'vueperslide--visible': isSlideVisible }" :face="slideFace3d" :style="wrapperStyles"
+    :aria-hidden="$parent.slides.activeUid === _uid || isSlideVisible ? 'false' : 'true'">
+    <div class="vueperslide__image" v-if="image && $parent.conf.slideImageInside" :style="imageStyles"></div>
+    <div class="vueperslide__content-wrapper" v-show="!$parent.conf.slideContentOutside && (title || hasTitleSlotData || content || hasContentSlotData)">
+        <div class="vueperslide__title" v-show="title || hasTitleSlotData">
+            <div v-show="!$parent.conf.slideContentOutside && !title">
+                <slot name="slideTitle"></slot>
+            </div>
+            <div v-if="title" v-html="title"></div>
+        </div>
+        <div class="vueperslide__content" v-if="content || hasContentSlotData">
+            <div v-show="!$parent.conf.slideContentOutside && !content">
+                <slot name="slideContent"></slot>
+            </div>
+            <div v-if="content" v-html="content"></div>
+        </div>
+    </div>
+</div>
 </template>
 
 <script>
@@ -105,74 +112,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.vueperslide {
-  white-space: normal;
-  background-size: cover;
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  height: 100%;
-
-  &__image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-size: cover;
-  }
-
-  &__content-wrapper:not(&__content-wrapper--outside-top):not(&__content-wrapper--outside-bottom) {
-    position: absolute;
-  }
-
-  .vueperslides--fade & {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    transition: .8s ease-in-out opacity;
-
-    &--active, &--visible {
-      z-index: 1;
-      opacity: 1;
-    }
-  }
-
-  .vueperslides--3d & {
-    position: absolute;
-    // Trickier than rotateY(180deg) translateZ($slideshowWidth / 2);
-    // But doesn't require to set a fixed width on the slideshow ;)
-    // transform: rotateY(270deg) translateX(-50%) rotateY(-90deg);
-    z-index: -1;
-
-    &--previous-slide, &--active, &--next-slide {z-index: 0;}
-    &--active {z-index: 1;}
-    &[face=front] {
-      // Trickier than rotateY(0deg) translateZ($slideshowWidth / 2),
-      // But doesn't require to set a fixed width on the slideshow ;)
-      transform: rotateY(90deg) translateX(-50%) rotateY(-90deg);
-    }
-
-    &[face=right] {
-      transform: rotateY(90deg) translateX(50%);
-      transform-origin: 100% 0;
-    }
-
-    &[face=back] {
-      // Trickier than rotateY(180deg) translateZ($slideshowWidth / 2);
-      // But doesn't require to set a fixed width on the slideshow ;)
-      transform: rotateY(270deg) translateX(-50%) rotateY(-90deg);
-    }
-
-    &[face=left] {
-      transform: rotateY(270deg) translateX(-50%);
-      transform-origin: 0 0;
-    }
-  }
-}
-</style>

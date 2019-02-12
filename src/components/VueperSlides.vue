@@ -1,43 +1,45 @@
-<template lang="pug">
-.vueperslides(:class="{ 'vueperslides--ready': isReady, 'vueperslides--fade': conf.fade, 'vueperslides--parallax': conf.parallax, 'vueperslides--touchable': touch.enabled && !disable, 'vueperslides--fixed-height': conf.fixedHeight, 'vueperslides--3d': conf['3d'], 'vueperslides--animated': transition.animated }" ref="vueperslides" aria-label="Slideshow" :style="vueperStyles")
-  .vueperslide__content-wrapper.vueperslide__content-wrapper--outside-top(:class="conf.slideContentOutsideClass" v-if="conf.slideContentOutside === 'top'")
-    .vueperslide__title(v-if="slides.count" v-html="getCurrentSlideData('title')")
-    .vueperslide__content(v-if="slides.count" v-html="getCurrentSlideData('content')")
-
-  .vueperslides__inner
-    .vueperslides__parallax-wrapper(:style="'padding-bottom:' + (conf.slideRatio * 100) + '%'" aria-live="polite")
-      .vueperslides__track(:class="{ 'vueperslides__track--dragging': touch.dragging, 'vueperslides__track--mousedown': mouseDown }" :style="trackStyles" ref="track")
-        .vueperslides__track-inner(:style="trackInnerStyles")
-          vueper-slide.vueperslide--clone(v-if="slides.count && clones[0]" :clone="0" :title="clones[0].title" :content="clones[0].content" :image="clones[0].image" :style="clones[0].style" aria-hidden="true")
-            div(v-if="clones[0].titleSlot" slot="slideTitle" v-html="clones[0].titleSlot")
-            div(v-if="clones[0].contentSlot" slot="slideContent" v-html="clones[0].contentSlot")
-          slot(:currentSlide="slides.current")
-          vueper-slide.vueperslide--clone(v-if="slides.count && clones[1]" :clone="1" :title="clones[1].title" :content="clones[1].content" :image="clones[1].image" :style="clones[1].style" aria-hidden="true")
-            div(v-if="clones[1].titleSlot" slot="slideTitle" v-html="clones[1].titleSlot")
-            div(v-if="clones[1].contentSlot" slot="slideContent" v-html="clones[1].contentSlot")
-
-    .vueperslides__paused(v-if="$slots.pausedIcon")
-      slot(name="pausedIcon")
-    .vueperslides__arrows(:class="{ 'vueperslides__arrows--outside': conf.arrowsOutside }" v-if="conf.arrows && slides.count > 1 && !disable")
-      button.vueperslides__arrow.vueperslides__arrow--prev(@click="previous()" v-show="!arrowPrevDisabled" aria-label="Previous" @keyup.left="previous()" @keyup.right="next()")
-        slot(name="arrowLeft")
-          svg(viewBox="0 0 24 24")
-            path(d="M16.2,21c0.3,0,0.5-0.1,0.7-0.3c0.4-0.4,0.4-1,0-1.4L9.6,12L17,4.7c0.4-0.4,0.4-1,0-1.4c-0.4-0.4-1-0.4-1.4,0L6.8,12l8.8,8.7C15.7,20.9,16,21,16.2,21z")
-      button.vueperslides__arrow.vueperslides__arrow--next(@click="next()" v-show="!arrowNextDisabled" aria-label="Next" @keyup.left="previous()" @keyup.right="next()")
-        slot(name="arrowRight")
-          svg(viewBox="0 0 24 24")
-            path(d="M7.8,21c-0.3,0-0.5-0.1-0.7-0.3c-0.4-0.4-0.4-1,0-1.4l7.4-7.3L7,4.7c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l8.8,8.7l-8.8,8.7C8.3,20.9,8,21,7.8,21z")
-    .vueperslides__bullets(v-if="conf.bullets && slides.count > 1 && !disable && !conf.bulletsOutside" role="tablist" aria-label="Slideshow navigation")
-      button.vueperslides__bullet(:class="{ 'vueperslides__bullet--active': slides.current === i * conf.slideMultiple }" v-for="(item, i) in Math.ceil(slides.count / conf.slideMultiple)" :key="i" @click="goToSlide(i * conf.slideMultiple)" @keyup.left="previous()" @keyup.right="next()" ref="bullet")
-        span {{ i + 1 }}
-
-  .vueperslides__bullets.vueperslides__bullets--outside(v-if="conf.bullets && slides.count > 1 && !disable && conf.bulletsOutside")
-    button.vueperslides__bullet(:class="{ 'vueperslides__bullet--active': slides.current === i * conf.slideMultiple }" v-for="(item, i) in Math.ceil(slides.count / conf.slideMultiple)" :key="i" @click="goToSlide(i * conf.slideMultiple)" @keyup.left="previous()" @keyup.right="next()" ref="bullet")
-      span {{ i + 1 }}
-
-  .vueperslide__content-wrapper.vueperslide__content-wrapper--outside-bottom(:class="conf.slideContentOutsideClass" v-if="conf.slideContentOutside === 'bottom'")
-    div.vueperslide__title(v-if="slides.count" v-html="getCurrentSlideData('title')")
-    div.vueperslide__content(v-if="slides.count" v-html="getCurrentSlideData('content')")
+<template>
+<div class="vueperslides" :class="{ 'vueperslides--ready': isReady, 'vueperslides--fade': conf.fade, 'vueperslides--parallax': conf.parallax, 'vueperslides--touchable': touch.enabled && !disable, 'vueperslides--fixed-height': conf.fixedHeight, 'vueperslides--3d': conf['3d'], 'vueperslides--animated': transition.animated }"
+    ref="vueperslides" aria-label="Slideshow" :style="vueperStyles">
+    <div class="vueperslide__content-wrapper vueperslide__content-wrapper--outside-top" :class="conf.slideContentOutsideClass" v-if="conf.slideContentOutside === 'top'">
+        <div class="vueperslide__title" v-if="slides.count" v-html="getCurrentSlideData('title')"></div>
+        <div class="vueperslide__content" v-if="slides.count" v-html="getCurrentSlideData('content')"></div>
+    </div>
+    <div class="vueperslides__inner">
+        <div class="vueperslides__parallax-wrapper" :style="'padding-bottom:' + (conf.slideRatio * 100) + '%'" aria-live="polite">
+            <div class="vueperslides__track" :class="{ 'vueperslides__track--dragging': touch.dragging, 'vueperslides__track--mousedown': mouseDown }" :style="trackStyles" ref="track">
+                <div class="vueperslides__track-inner" :style="trackInnerStyles">
+                    <vueper-slide class="vueperslide--clone" v-if="slides.count && clones[0]" :clone="0" :title="clones[0].title" :content="clones[0].content" :image="clones[0].image" :style="clones[0].style" aria-hidden="true">
+                        <div v-if="clones[0].titleSlot" slot="slideTitle" v-html="clones[0].titleSlot"></div>
+                        <div v-if="clones[0].contentSlot" slot="slideContent" v-html="clones[0].contentSlot"></div>
+                    </vueper-slide>
+                    <slot :currentSlide="slides.current"></slot>
+                    <vueper-slide class="vueperslide--clone" v-if="slides.count && clones[1]" :clone="1" :title="clones[1].title" :content="clones[1].content" :image="clones[1].image" :style="clones[1].style" aria-hidden="true">
+                        <div v-if="clones[1].titleSlot" slot="slideTitle" v-html="clones[1].titleSlot"></div>
+                        <div v-if="clones[1].contentSlot" slot="slideContent" v-html="clones[1].contentSlot"></div>
+                    </vueper-slide>
+                </div>
+            </div>
+        </div>
+        <div class="vueperslides__paused" v-if="$slots.pausedIcon">
+            <slot name="pausedIcon"></slot>
+        </div>
+        <div class="vueperslides__arrows" :class="{ 'vueperslides__arrows--outside': conf.arrowsOutside }" v-if="conf.arrows && slides.count > 1 && !disable"><button class="vueperslides__arrow vueperslides__arrow--prev" @click="previous()" v-show="!arrowPrevDisabled" aria-label="Previous" @keyup.left="previous()" @keyup.right="next()"><slot name="arrowLeft"><svg viewBox="0 0 24 24"><path d="M16.2,21c0.3,0,0.5-0.1,0.7-0.3c0.4-0.4,0.4-1,0-1.4L9.6,12L17,4.7c0.4-0.4,0.4-1,0-1.4c-0.4-0.4-1-0.4-1.4,0L6.8,12l8.8,8.7C15.7,20.9,16,21,16.2,21z"></path></svg></slot></button>
+            <button
+                class="vueperslides__arrow vueperslides__arrow--next" @click="next()" v-show="!arrowNextDisabled" aria-label="Next" @keyup.left="previous()" @keyup.right="next()">
+                <slot name="arrowRight"><svg viewBox="0 0 24 24"><path d="M7.8,21c-0.3,0-0.5-0.1-0.7-0.3c-0.4-0.4-0.4-1,0-1.4l7.4-7.3L7,4.7c-0.4-0.4-0.4-1,0-1.4s1-0.4,1.4,0l8.8,8.7l-8.8,8.7C8.3,20.9,8,21,7.8,21z"></path></svg></slot>
+                </button>
+        </div>
+        <div class="vueperslides__bullets" v-if="conf.bullets && slides.count > 1 && !disable && !conf.bulletsOutside" role="tablist" aria-label="Slideshow navigation"><button class="vueperslides__bullet" :class="{ 'vueperslides__bullet--active': slides.current === i * conf.slideMultiple }" v-for="(item, i) in Math.ceil(slides.count / conf.slideMultiple)" :key="i" @click="goToSlide(i * conf.slideMultiple)" @keyup.left="previous()"
+                @keyup.right="next()" ref="bullet"><span>{{ i + 1 }}</span></button></div>
+    </div>
+    <div class="vueperslides__bullets vueperslides__bullets--outside" v-if="conf.bullets && slides.count > 1 && !disable && conf.bulletsOutside"><button class="vueperslides__bullet" :class="{ 'vueperslides__bullet--active': slides.current === i * conf.slideMultiple }" v-for="(item, i) in Math.ceil(slides.count / conf.slideMultiple)" :key="i" @click="goToSlide(i * conf.slideMultiple)" @keyup.left="previous()"
+            @keyup.right="next()" ref="bullet"><span>{{ i + 1 }}</span></button></div>
+    <div class="vueperslide__content-wrapper vueperslide__content-wrapper--outside-bottom" :class="conf.slideContentOutsideClass" v-if="conf.slideContentOutside === 'bottom'">
+        <div class="vueperslide__title" v-if="slides.count" v-html="getCurrentSlideData('title')"></div>
+        <div class="vueperslide__content" v-if="slides.count" v-html="getCurrentSlideData('content')"></div>
+    </div>
+</div>
 </template>
 
 <script>
@@ -859,141 +861,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-// Vueperslides REQUIRED styles.
-// The nice-to-have not-required styles are placed in an external
-// css file so the end user can easily override it.
-.vueperslides {
-  position: relative;
-
-  &--fixed-height {
-    .vueperslides__inner,
-    .vueperslides__parallax-wrapper,
-    .vueperslide {
-      height: inherit;
-    }
-
-    .vueperslides__parallax-wrapper {
-      padding-bottom: 0 !important;
-    }
-  }
-
-  &__inner {
-    position: relative;
-    user-select: none;
-  }
-
-  &__parallax-wrapper {
-    position: relative;
-    overflow: hidden;
-
-    .vueperslides--3d & {
-      overflow: visible;
-    }
-  }
-
-  &__track {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    left: 0;
-    right: 0;
-    overflow: hidden;
-    z-index: 1;
-
-    .vueperslides--parallax & {
-      height: 200%;
-      transform: translateY(0);
-    }
-
-    .vueperslides--touchable & {
-      cursor: ew-resize;
-      cursor: -webkit-grab;
-      cursor: grab;
-
-      &--mousedown, &--dragging {
-        cursor: -webkit-grabbing;
-        cursor: grabbing;
-      }
-    }
-
-    .vueperslides--3d & {
-      overflow: visible;
-      perspective: 100em;
-    }
-  }
-
-  &__track-inner {
-    white-space: nowrap;
-    transition: 0.5s ease-in-out transform;
-    height: 100%;
-
-    .vueperslides--fade & {
-      white-space: normal;
-      transition: none;
-    }
-
-    .vueperslides--3d & {
-      transform-style: preserve-3d;
-    }
-
-    .vueperslides__track--mousedown & {
-      transition: 0.2s ease-in-out transform !important;
-    }
-
-    .vueperslides__track--dragging & {
-      transition: none;
-    }
-
-    .vueperslides__track--no-animation & {
-      transition-duration: 0s;
-    }
-  }
-
-  &__arrow {
-    position: absolute;
-    fill: currentColor;
-    width: 1em;
-    text-align: center;
-    transform: translateY(-50%);
-    transition: 0.3s ease-in-out;
-    cursor: pointer;
-    user-select: none;
-    outline: none;
-    z-index: 2;
-  }
-
-  &__paused {
-    position: absolute;
-    transition: 0.3s ease-in-out;
-  }
-
-  &__bullets {
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    &--outside {
-      position: relative;
-    }
-  }
-
-  &__bullet {
-    cursor: pointer;
-    user-select: none;
-    outline: none;
-    z-index: 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    &::-moz-focus-inner {
-      border: 0;
-    }
-  }
-}
-</style>
